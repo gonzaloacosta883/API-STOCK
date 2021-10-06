@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use Exception;
+use App\Entity\Producto;
 use App\Entity\Categoria;
+use App\Repository\CategoriaRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,8 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @ORM\Entity(repositoryClass=CategoriaControllerRepository::class)
- * @Route("/categoria", name="categoria")
+ * @Route("/categoria")
  */
 class CategoriaController extends AbstractController
 {
@@ -37,11 +38,11 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/get", name="get_categorias", methods={GET})
+     * @Route("/get", name="get_categorias", methods="GET")
      */
     public function getCategorias() {
         $em = $this->getDoctrine()->getManager();
-        $categorias = $em->findAll();
+        $categorias = $em->getRepository(Categoria::class)->findAll();
         $arregloCategorias = [];
 
         $response = new JsonResponse();
@@ -61,12 +62,82 @@ class CategoriaController extends AbstractController
             'message' => $message,
             'data' => $arregloCategorias,
         ]);
+
+        return $response;
     }
 
     /**
-     * @Route("/get_productos/{id}", name="get_productos_por_categoria")
+     * @Route("/get_categoria/{id}", 
+     * name="get_categoria", 
+     * methods="GET",
+     * requirements={"id"="\d+"},
+     * defaults={"id": null}
+     * )
+     */
+    public function getCategoriaPorId($id){
+        if (!is_null($id)) {
+            throw new Exception("Error Processing Request, id indefinido", 1);
+        }
+        $message = NULL;
+        $data = NULL;
+        $success = true;
+
+        $em = $this->getDoctrine()->getManager();
+        $categoria = $em->getRepository(Categoria::class)->find($id);
+
+        if (!empty($categoria)) {
+            $data = [
+                'id' => $categoria->getId(),
+                'nombre' => $categoria->getNombre(),
+            ];
+            $message = 'Operación Exitosa';
+        }
+        else {
+            $message = 'Producto no encontrada';
+        }
+
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data,
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/get_productos/{id}", name="get_productos_por_categoria", methods="GET")
      */
     public function getProductosPorCategoria($id) {
         
+        if (!is_null($id)) {
+            throw new Exception("Error Processing Request, id indefinido", 1);
+        }
+
+        $message = NULL;
+        $data = NULL;
+        $success = true;
+
+        $em = $this->getDoctrine()->getManager();
+        $producto = $em->getRepository(Producto::class)->findBy(['categoria' => $id]);
+        if (!empty($producto)) {
+            $data = [
+                'id' => $producto->getId(),
+                'nombre' => $producto->getNombre(),
+                'precio' => $productos[$i]->getPrecio()
+            ];
+            $message = 'Operación Exitosa';
+        }
+        else {
+            $message = 'Producto no encontrado';
+        }
+
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data,
+        ]);
+        return $response;
     }
 }

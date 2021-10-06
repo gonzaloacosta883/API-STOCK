@@ -100,7 +100,7 @@ class ProductoController extends AbstractController
         $success = true;
         
         if (!is_null($id)) {
-            throw new Exception("Error Processing Request, el id indefinido", 1);
+            throw new Exception("Error Processing Request, id indefinido", 1);
         }
         else {
             $em = $this->getDoctrine()->getManager();
