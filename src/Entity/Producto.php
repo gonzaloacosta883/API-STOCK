@@ -37,7 +37,7 @@ class Producto
 
     /**
      * @ORM\ManyToOne(targetEntity=Categoria::class, inversedBy="productos")
-     * @ORM\JoinColumn(nullable=false)
+     * @JoinColumn(name="categoria_id", referencedColumnName="id")
      */
     private $categoria;
 

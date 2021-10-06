@@ -23,14 +23,16 @@ class ProductoController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(),true);
+        $precio = $data['precio'];
+        $id_categoria = $data['categoria'];
 
         $producto = new Producto();
         $producto->setNombre($data['nombre']);
         $producto->setCodigoColor($data['codigoColor']);
-        $producto->setPrecio($data['precio']);
+        $producto->setPrecio($precio);
 
-        $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
-        $precio->setCategoria($categoria);
+        $categoria = $em->getRepository(Categoria::class)->find($id_categoria);
+        $producto->setCategoria($categoria);
 
         $em->persist($producto);
         $em->flush();

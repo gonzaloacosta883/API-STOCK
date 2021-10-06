@@ -25,21 +25,13 @@ class Categoria
     private $nombre;
 
     /**
-    * @ORM\OneToMany(targetEntity=Producto::class, mappedBy="categoria")
-    */
+     * @ORM\OneToMany(targetEntity=Producto::class, mappedBy="categoria", orphanRemoval=true)
+     */
     private $productos;
 
     public function __construct()
     {
         $this->productos = new ArrayCollection();
-    }
-
-    public function addProducto(Producto $producto) {
-        $this->productos[] = $producto;
-    }
-
-    public function getProductos() {
-        return $this->productos;
     }
 
     public function getId(): ?int
@@ -56,5 +48,13 @@ class Categoria
     {
         $this->nombre = $nombre;
         return $this;
+    }
+
+    public function addProducto(Producto $producto) {
+        $this->productos[] = $producto;
+    }
+
+    public function getProductos() {
+        return $this->productos;
     }
 }
