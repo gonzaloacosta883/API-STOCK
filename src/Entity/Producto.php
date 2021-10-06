@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Entity\Categoria;
+use App\Entity\StockDeposito;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use App\Repository\ProductoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=ProductoRepository::class)
@@ -37,10 +39,26 @@ class Producto
 
     /**
      * @ORM\ManyToOne(targetEntity=Categoria::class, inversedBy="productos")
-     * @JoinColumn(name="categoria_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="categoria_id", referencedColumnName="id")
      */
     private $categoria;
 
+    /**
+     * @ORM\OneToMany(targetEntity=StockDeposito::class, mappedBy="producto")
+     */
+    private $stocks;
+
+    public function __construct() {
+        $this->stocks = new ArrayCollection();
+    }
+
+    public function addStock(StockDeposito $stock) {
+        $this->stocks[] = $stock;
+    }
+
+    public function getStocks() {
+        return $this->stocks;
+    }
 
     public function getId(): ?int
     {
