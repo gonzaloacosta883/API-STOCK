@@ -23,15 +23,24 @@ class ProductoController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(),true);
-        $precio = $data['precio'];
-        $id_categoria = $data['categoria'];
+        
+        $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $data['nombre']]);
+        if(!empty($duplicado)){
+            $response = new JsonResponse();
+            $response->setData([
+                'success' => false,
+                'message' => "Ya existe un producto con el nombre ingresado!",
+                'data' => NULL,
+            ]);
+            return $response;
+        }
 
         $producto = new Producto();
         $producto->setNombre($data['nombre']);
         $producto->setCodigoColor($data['codigoColor']);
-        $producto->setPrecio($precio);
+        $producto->setPrecio($data['precio']);
 
-        $categoria = $em->getRepository(Categoria::class)->find($id_categoria);
+        $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
         $producto->setCategoria($categoria);
 
         $em->persist($producto);
