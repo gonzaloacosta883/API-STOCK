@@ -37,7 +37,7 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/get", name="get_categorias")
+     * @Route("/get", name="get_categorias", methods={GET})
      */
     public function getCategorias() {
         $em = $this->getDoctrine()->getManager();
@@ -61,5 +61,12 @@ class CategoriaController extends AbstractController
             'message' => $message,
             'data' => $arregloCategorias,
         ]);
+    }
+
+    /**
+     * @Route("/get_productos/{id}", name="get_productos_por_categoria")
+     */
+    public function getProductosPorCategoria($id) {
+        
     }
 }

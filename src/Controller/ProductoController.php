@@ -48,4 +48,86 @@ class ProductoController extends AbstractController
 
         return new JsonResponse(['status' => 'Opreción Exitosa'], Response::HTTP_CREATED);
     }
+
+    /**
+     * @Route("/get", name="get_productos", methods="GET")
+     */
+    public function getProductos() {
+        $em = $this->getDoctrine()->getManager();
+        $productos = $em->getRepository(Producto::class)->findAll();
+        $arregloProductos = [];
+        $message = NULL;
+
+        for ($i=0; $i <count($productos) ; $i++) { 
+            $message = 'Operación Exitosa';
+            $unProducto = [
+                'id' => $productos[$i]->getId(),
+                'nombre' => $productos[$i]->getNombre(),
+                'codigoColor' => $productos[$i]->getCodigoColor(),
+                'precio' => $productos[$i]->getPrecio(),
+                'categoria' => [
+                    'id' => $productos[$i]->getCategoria()->getId(),
+                    'nombre' => $productos[$i]->getCategoria()->getNombre()
+                    ]
+                ];
+            array_push($arregloProductos, $unProducto);
+        }
+
+        if(count($productos) == 0) $message = 'No se registran productos';
+
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => true,
+            'message' => $message,
+            'data' => $arregloProductos,
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/get/{id}", 
+     * name="get_producto_por_id", 
+     * methods="GET",
+     * requirements={"id"="\d+"},
+     * defaults={"id": NULL}
+     * )
+     */
+    public function getProductoPorId($id){
+
+        $message = NULL;
+        $data = NULL;
+        $success = true;
+        
+        if (!is_null($id)) {
+            throw new Exception("Error Processing Request, el id indefinido", 1);
+        }
+        else {
+            $em = $this->getDoctrine()->getManager();
+            $producto = $em->getRepository(Producto::class)->find($id);
+            if (!empty($producto)) {
+                $data = [
+                    'id' => $producto->getId(),
+                    'nombre' => $producto->getNombre(),
+                    'precio' => $productos[$i]->getPrecio(),
+                    'categoria' => [
+                        'id' => $productos[$i]->getCategoria()->getId(),
+                        'nombre' => $productos[$i]->getCategoria()->getNombre()
+                    ]
+                ];
+                $message = 'Operación Exitosa';
+            }
+            else {
+                $message = 'Producto no encontrado';
+            }
+        }
+
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data,
+        ]);
+        return $response;
+    }
 }
