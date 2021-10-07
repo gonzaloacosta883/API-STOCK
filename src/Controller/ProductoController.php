@@ -46,7 +46,7 @@ class ProductoController extends AbstractController
         $em->persist($producto);
         $em->flush();
 
-        return new JsonResponse(['status' => 'Opreción Exitosa'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Operación Exitosa'], Response::HTTP_CREATED);
     }
 
     /**
@@ -106,6 +106,21 @@ class ProductoController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $producto = $em->getRepository(Producto::class)->find($id);
             if (!empty($producto)) {
+                $stocks = [];
+                $stockDeposito = $producto->getStocks();
+                /*INFORMACION SOBRE EL SOTCK DE DICHO PRODUCTO EN LOS DISTINTOS ALMACENES*/
+                for ($i=0; $i <count($stockDeposito) ; $i++) { 
+                    $stocks[] = [
+                        'id' => $stockDeposito->getId(),
+                        'deposito' => [
+                            'nombre' => $stockDeposito->getDeposito()->getNombre(),
+                            'direccion' => $stockDeposito->getDeposito()->getDireccion(),
+                        ],
+                        'cantidad' => $stockDeposito->getCantidad(),
+                        'unidades' => $stockDeposito->getUnidades()
+                    ];
+                }
+
                 $data = [
                     'id' => $producto->getId(),
                     'nombre' => $producto->getNombre(),
@@ -113,7 +128,8 @@ class ProductoController extends AbstractController
                     'categoria' => [
                         'id' => $productos[$i]->getCategoria()->getId(),
                         'nombre' => $productos[$i]->getCategoria()->getNombre()
-                    ]
+                    ],
+                    'stocks' => $stocks
                 ];
                 $message = 'Operación Exitosa';
             }

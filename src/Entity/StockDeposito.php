@@ -32,6 +32,16 @@ class StockDeposito
      */
     private $deposito;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $cantidad;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $unidades;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -48,9 +58,6 @@ class StockDeposito
         return $this;
     }
 
-    /**
-     * Get the value of deposito
-     */ 
     public function getDeposito()
     {
         return $this->deposito;
@@ -59,6 +66,29 @@ class StockDeposito
     public function setDeposito(Deposito $deposito)
     {
         $this->deposito = $deposito;
+        return $this;
+    }
+
+    public function getCantidad()
+    {
+        return $this->cantidad;
+    }
+
+    public function setCantidad($cantidad)
+    {
+        $this->cantidad = $cantidad;
+
+        return $this;
+    }
+
+    public function getUnidades()
+    {
+        return $this->unidades;
+    }
+
+    public function setUnidades($unidades)
+    {
+        $this->unidades = $unidades;
         return $this;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\StockDeposito;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToMany;
 use App\Repository\DepositoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
