@@ -6,6 +6,7 @@ use App\Entity\Producto;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
 use App\Repository\CategoriaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=CategoriaRepository::class)

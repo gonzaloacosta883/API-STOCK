@@ -34,7 +34,14 @@ class CategoriaController extends AbstractController
         $em->persist($categoria);
         $em->flush();
 
-        return new JsonResponse(['status' => 'Opreción Exitosa'], Response::HTTP_CREATED);
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => true,
+            'message' => 'Operacion Exitosa',
+            'data' => NULL,
+        ]);
+
+        return $response;
     }
 
     /**
@@ -93,7 +100,7 @@ class CategoriaController extends AbstractController
             $message = 'Operación Exitosa';
         }
         else {
-            $message = 'Producto no encontrada';
+            $message = 'Categoria no encontrada';
         }
 
         $response = new JsonResponse();
@@ -129,7 +136,7 @@ class CategoriaController extends AbstractController
             $message = 'Operación Exitosa';
         }
         else {
-            $message = 'Producto no encontrado';
+            $message = 'No existen productos para la categoria solicitada!';
         }
 
         $response = new JsonResponse();
