@@ -48,6 +48,11 @@ class Producto
      */
     private $stocks;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $foto;
+
     public function __construct() {
         $this->stocks = new ArrayCollection();
     }
@@ -106,6 +111,17 @@ class Producto
     public function setCategoria(Categoria $categoria)
     {
         $this->categoria = $categoria;
+        return $this;
+    }
+
+    public function getFoto()
+    {
+        return $this->foto;
+    }
+
+    public function setFoto($foto)
+    {
+        $this->foto = $foto;
         return $this;
     }
 }

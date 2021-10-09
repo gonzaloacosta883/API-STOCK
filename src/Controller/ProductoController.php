@@ -23,30 +23,34 @@ class ProductoController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(),true);
+        $success = NULL;$message=NULL;$data=NULL;
         
         $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $data['nombre']]);
         if(!empty($duplicado)){
-            $response = new JsonResponse();
-            $response->setData([
-                'success' => false,
-                'message' => "Ya existe un producto con el nombre ingresado!",
-                'data' => NULL,
-            ]);
-            return $response;
+            $success = false;
+            $message = "Ya existe un producto con el nombre ingresado!";
         }
-
-        $producto = new Producto();
-        $producto->setNombre($data['nombre']);
-        $producto->setCodigoColor($data['codigoColor']);
-        $producto->setPrecio($data['precio']);
-
-        $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
-        $producto->setCategoria($categoria);
-
-        $em->persist($producto);
-        $em->flush();
-
-        return new JsonResponse(['status' => 'Operación Exitosa'], Response::HTTP_CREATED);
+        else {
+            $producto = new Producto();
+            $producto->setNombre($data['nombre']);
+            $producto->setCodigoColor($data['codigoColor']);
+            $producto->setPrecio($data['precio']);
+    
+            $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
+            $producto->setCategoria($categoria);
+    
+            $em->persist($producto);
+            $em->flush();
+            $success = true;
+            $message = "Operación Exitosa";
+        }
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data,
+        ]);
+        return $response;
     }
 
     /**
@@ -125,10 +129,12 @@ class ProductoController extends AbstractController
                     'id' => $producto->getId(),
                     'nombre' => $producto->getNombre(),
                     'precio' => $productos[$i]->getPrecio(),
+                    'codigoColor' => $productos[$i]->getCodigoColor(),
                     'categoria' => [
                         'id' => $productos[$i]->getCategoria()->getId(),
                         'nombre' => $productos[$i]->getCategoria()->getNombre()
                     ],
+                    'foto' => $productos[$i]->getFoto(),
                     'stocks' => $stocks
                 ];
                 $message = 'Operación Exitosa';

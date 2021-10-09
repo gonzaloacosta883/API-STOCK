@@ -131,7 +131,8 @@ class CategoriaController extends AbstractController
             $data = [
                 'id' => $producto->getId(),
                 'nombre' => $producto->getNombre(),
-                'precio' => $productos[$i]->getPrecio()
+                'precio' => $productos[$i]->getPrecio(),
+                'foto' => $productos[$i]->getFoto(),
             ];
             $message = 'Operación Exitosa';
         }
