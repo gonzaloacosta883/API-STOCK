@@ -9,13 +9,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+#Nelmio\ApiDocBundle
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+
 /**
  * @Route("/deposito")
  */
 class DepositoController extends AbstractController
 {
     /**
-     * @Route("/add", name="add_deposito", methods="POST")
+     * @Route("/add", name="add_deposito", methods="{POST}")
      */
     public function addDeposito(Request $request): JsonResponse
     {
