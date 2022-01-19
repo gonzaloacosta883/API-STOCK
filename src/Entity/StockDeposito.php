@@ -42,6 +42,10 @@ class StockDeposito
      */
     private $unidades;
 
+    public function __construct() {
+        $this->cantidad = 0;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,10 +78,15 @@ class StockDeposito
         return $this->cantidad;
     }
 
-    public function setCantidad($cantidad)
+    public function incrementarCantidad($cantidad)
     {
-        $this->cantidad = $cantidad;
+        $this->cantidad += $cantidad;
+        return $this;
+    }
 
+    public function decrementarCantidad($cantidad)
+    {
+        $this->cantidad -= $cantidad;
         return $this;
     }
 

@@ -117,11 +117,12 @@ class ProductoController extends AbstractController
                     $stocks[] = [
                         'id' => $stockDeposito->getId(),
                         'deposito' => [
+                            'id' => $stockDeposito->getDeposito()->getId(),
                             'nombre' => $stockDeposito->getDeposito()->getNombre(),
                             'direccion' => $stockDeposito->getDeposito()->getDireccion(),
+                            'cantidad' => $stockDeposito->getCantidad(),
+                            'unidades' => $stockDeposito->getUnidades()
                         ],
-                        'cantidad' => $stockDeposito->getCantidad(),
-                        'unidades' => $stockDeposito->getUnidades()
                     ];
                 }
 
