@@ -24,20 +24,38 @@ class CategoriaController extends AbstractController
     {
         $data = json_decode($request->getContent(),true);
         $nombre = $data['nombre'];
+        $message = NULL;
+        $success = NULL;
+
+        strtoupper(trim($nombre));//Mayus sin espacios
 
         if (empty($nombre))
             throw new Exception("Error Processing Request", 1);
 
+        //Verifico que no exista
         $em = $this->getDoctrine()->getManager();
-        $categoria = new Categoria();
-        $categoria->setNombre($nombre);
-        $em->persist($categoria);
-        $em->flush();
+        $duplicado = $em->getRepository(Categoria::class)
+            ->findBy(['nombre' => $nombre]);
+
+        if ($duplicado) {
+            $message = "Error: registro duplicado";
+            $success = false;
+        }
+        else {
+
+            $categoria = new Categoria();
+            $categoria->setNombre($nombre);
+            $em->persist($categoria);
+            $em->flush();
+
+            $message = "Operacion Exitosa";
+            $success = true;
+        }
 
         $response = new JsonResponse();
         $response->setData([
-            'success' => true,
-            'message' => 'Operacion Exitosa',
+            'success' => $success,
+            'message' => $message,
             'data' => NULL,
         ]);
 
