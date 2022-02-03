@@ -54,7 +54,7 @@ class CategoriaController extends AbstractController
 
         $response = new JsonResponse();
         if (!empty($categorias)) {
-            $message = 'Operación Exitosa';
+
             for ($i=0; $i <count($categorias) ; $i++) { 
                 $unaCategoria = [
                     'id' => $categorias[$i]->getId(),
@@ -66,7 +66,7 @@ class CategoriaController extends AbstractController
         
         $response->setData([
             'success' => true,
-            'message' => $message,
+            'message' => 'Operación Exitosa',
             'data' => $arregloCategorias,
         ]);
 

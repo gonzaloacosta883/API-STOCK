@@ -1,9 +1,39 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: App stock
+            title: Api stock
             description: Servicio para el control de stock de productos!
             version: 1.0.0
+        paths:
+            /categoria/get:
+                get:
+                    description: Devuelve todas las categorias de productos.
+                    tags:
+                        - Categorias
+                    responses:
+                        200:
+                            description: OK
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            status: { type: string }
+            /categoria/add:
+                post:
+                    description: Crea una categoria inexistente.
+                    tags:
+                        - Categorias
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        nombre: {type: string, example: bebidas}
+        tags:
+            - name: Categorias
+
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
