@@ -92,7 +92,7 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/get_categoria/{id}", 
+     * @Route("/get/{id}", 
      * name="get_categoria", 
      * methods="GET",
      * requirements={"id"="\d+"},
@@ -100,12 +100,13 @@ class CategoriaController extends AbstractController
      * )
      */
     public function getCategoriaPorId($id){
-        if (!is_null($id)) {
+        
+        if (is_null($id)) {
             throw new Exception("Error Processing Request, id indefinido", 1);
         }
+        
         $message = NULL;
         $data = NULL;
-        $success = true;
 
         $em = $this->getDoctrine()->getManager();
         $categoria = $em->getRepository(Categoria::class)->find($id);
@@ -116,9 +117,11 @@ class CategoriaController extends AbstractController
                 'nombre' => $categoria->getNombre(),
             ];
             $message = 'Operación Exitosa';
+            $success = true;
         }
         else {
             $message = 'Categoria no encontrada';
+            $success = false;
         }
 
         $response = new JsonResponse();
@@ -131,17 +134,16 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/get_productos/{id}", name="get_productos_por_categoria", methods="GET")
+     * @Route("/{id}/get/productos/", name="get_productos_por_categoria", methods="GET")
      */
     public function getProductosPorCategoria($id) {
         
-        if (!is_null($id)) {
+        if (is_null($id)) {
             throw new Exception("Error Processing Request, id indefinido", 1);
         }
 
         $message = NULL;
         $data = NULL;
-        $success = true;
 
         $em = $this->getDoctrine()->getManager();
         $producto = $em->getRepository(Producto::class)->findBy(['categoria' => $id]);
@@ -153,9 +155,11 @@ class CategoriaController extends AbstractController
                 'foto' => $productos[$i]->getFoto(),
             ];
             $message = 'Operación Exitosa';
+            $success = true;
         }
         else {
             $message = 'No existen productos para la categoria solicitada!';
+            $success = false;
         }
 
         $response = new JsonResponse();

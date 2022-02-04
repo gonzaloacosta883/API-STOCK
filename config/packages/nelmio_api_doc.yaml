@@ -31,8 +31,49 @@ nelmio_api_doc:
                                     type: object
                                     properties:
                                         nombre: {type: string, example: bebidas}
+            /categoria/get/{id}:
+                get:
+                    tags:
+                        - Categorias
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id de la categoria
+            /categoria/{id}/get/productos/:
+                get:
+                    tags:
+                        - Categorias
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id de la categoria de las cuales se quiere obtener los productos
+            /producto/add:
+                post:
+                    description: Crea un producto y lo asocia a una categoria
+                    tags: 
+                        - Productos
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        nombre: {type: string, example: Picadillo de carne Carrefour 90 g}
+                                        codigoColor: {type: string, example: 005BAA}
+                                        precio: {type: float, example: 50}
+                                        categoria: {type: integer, example: 2}
+
         tags:
             - name: Categorias
+            - name: Productos
 
     areas: # to filter documented areas
         path_patterns:

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Entity\Producto;
 use App\Entity\Categoria;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,19 +22,27 @@ class ProductoController extends AbstractController
      */
     public function addProducto(Request $request): JsonResponse
     {
-        $em = $this->getDoctrine()->getManager();
+
         $data = json_decode($request->getContent(),true);
-        $success = NULL;$message=NULL;$data=NULL;
+        $success = NULL;
+        $message=NULL;
+
+        $nombre = $data['nombre'];
+        strtoupper(trim($nombre));//Mayus sin espacios
         
-        $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $data['nombre']]);
+        $em = $this->getDoctrine()->getManager();
+        $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $nombre]);
+
         if(!empty($duplicado)){
             $success = false;
             $message = "Ya existe un producto con el nombre ingresado!";
+            $data = NULL;
         }
         else {
+
             $producto = new Producto();
-            $producto->setNombre($data['nombre']);
-            $producto->setCodigoColor($data['codigoColor']);
+            $producto->setNombre($nombre);
+            $producto->setCodigoColor(trim($data['codigoColor']));
             $producto->setPrecio($data['precio']);
     
             $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
@@ -43,7 +52,9 @@ class ProductoController extends AbstractController
             $em->flush();
             $success = true;
             $message = "Operación Exitosa";
+            $data = NULL;
         }
+        
         $response = new JsonResponse();
         $response->setData([
             'success' => $success,
