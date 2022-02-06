@@ -146,14 +146,18 @@ class CategoriaController extends AbstractController
         $data = NULL;
 
         $em = $this->getDoctrine()->getManager();
-        $producto = $em->getRepository(Producto::class)->findBy(['categoria' => $id]);
-        if (!empty($producto)) {
-            $data = [
-                'id' => $producto->getId(),
-                'nombre' => $producto->getNombre(),
-                'precio' => $productos[$i]->getPrecio(),
-                'foto' => $productos[$i]->getFoto(),
-            ];
+        $productos = $em->getRepository(Producto::class)->findBy(['categoria' => intval($id)]);
+
+        if (!empty($productos)) {
+            foreach ($productos as $producto) {
+                $data[] = [
+                    'id' => $producto->getId(),
+                    'nombre' => $producto->getNombre(),
+                    'precio' => $producto->getPrecio(),
+                    'foto' => $producto->getFoto(),
+                ];    
+            }
+            
             $message = 'Operación Exitosa';
             $success = true;
         }
