@@ -63,7 +63,7 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/get", name="get_categorias", methods="GET")
+     * @Route("/all", name="get_categorias", methods="GET")
      */
     public function getCategorias() {
         $em = $this->getDoctrine()->getManager();
@@ -92,7 +92,7 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/get/{id}", 
+     * @Route("/{id}", 
      * name="get_categoria", 
      * methods="GET",
      * requirements={"id"="\d+"},

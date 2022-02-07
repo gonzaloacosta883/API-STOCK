@@ -72,7 +72,7 @@ class ProductoController extends AbstractController
     }
 
     /**
-     * @Route("/get", name="get_productos", methods="GET")
+     * @Route("/all", name="get_productos", methods="GET")
      */
     public function getProductos() {
         $em = $this->getDoctrine()->getManager();
@@ -108,7 +108,7 @@ class ProductoController extends AbstractController
     }
 
     /**
-     * @Route("/get/{id}", 
+     * @Route("/{id}", 
      * name="get_producto_por_id", 
      * methods="GET",
      * requirements={"id"="\d+"},
@@ -120,18 +120,21 @@ class ProductoController extends AbstractController
         $message = NULL;
         $data = NULL;
         $success = true;
+        $stocks = [];
         
-        if (!is_null($id)) {
+        if (is_null($id)) {
             throw new Exception("Error Processing Request, id indefinido", 1);
         }
         else {
+
             $em = $this->getDoctrine()->getManager();
             $producto = $em->getRepository(Producto::class)->find($id);
+            
             if (!empty($producto)) {
-                $stocks = [];
-                $stockDeposito = $producto->getStocks();
+                
+                $stocksDeposito = $producto->getStocks();
                 /*INFORMACION SOBRE EL SOTCK DE DICHO PRODUCTO EN LOS DISTINTOS ALMACENES*/
-                for ($i=0; $i <count($stockDeposito) ; $i++) { 
+                foreach ($stocksDeposito as $stockDeposito) {
                     $stocks[] = [
                         'id' => $stockDeposito->getId(),
                         'deposito' => [
@@ -142,18 +145,20 @@ class ProductoController extends AbstractController
                             'unidades' => $stockDeposito->getUnidades()
                         ],
                     ];
+                    $response = new JsonResponse();
+                    $response->setData($stocks);
                 }
 
                 $data = [
                     'id' => $producto->getId(),
                     'nombre' => $producto->getNombre(),
-                    'precio' => $productos[$i]->getPrecio(),
-                    'codigoColor' => $productos[$i]->getCodigoColor(),
+                    'precio' => $producto->getPrecio(),
+                    'codigoColor' => $producto->getCodigoColor(),
                     'categoria' => [
-                        'id' => $productos[$i]->getCategoria()->getId(),
-                        'nombre' => $productos[$i]->getCategoria()->getNombre()
+                        'id' => $producto->getCategoria()->getId(),
+                        'nombre' => $producto->getCategoria()->getNombre()
                     ],
-                    'foto' => $productos[$i]->getFoto(),
+                    'foto' => $producto->getFoto(),
                     'stocks' => $stocks
                 ];
                 $message = 'Operación Exitosa';

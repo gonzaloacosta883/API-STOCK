@@ -5,7 +5,7 @@ nelmio_api_doc:
             description: Servicio para el control de stock de productos!
             version: 1.0.0
         paths:
-            /categoria/get:
+            /categoria/all:
                 get:
                     description: Devuelve todas las categorias de productos.
                     tags:
@@ -31,7 +31,7 @@ nelmio_api_doc:
                                     type: object
                                     properties:
                                         nombre: {type: string, example: bebidas}
-            /categoria/get/{id}:
+            /categoria/{id}:
                 get:
                     tags:
                         - Categorias
@@ -70,6 +70,36 @@ nelmio_api_doc:
                                         codigoColor: {type: string, example: 005BAA}
                                         precio: {type: float, example: 50}
                                         categoria: {type: integer, example: 2}
+            /producto/all:
+                get:
+                    description: Devuelve la lista de productos
+                    tags:
+                        - Productos
+                    responses:
+                        200:
+                            description: OK
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: {type: integer, example: 1}
+                                            nombre: {type: string, example: Picadillo de carne Carrefour 90 g}
+                                            codigoColor: {type: string, example: 005BAA}
+                                            precio: {type: float, example: 50}
+            /producto/{id}:
+                get:
+                    tags:
+                        - Productos
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id del producto que se quiere obtener
+
 
         tags:
             - name: Categorias
