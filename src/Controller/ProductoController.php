@@ -29,8 +29,16 @@ class ProductoController extends AbstractController
 
         $nombre = $data['nombre'];
         strtoupper(trim($nombre));//Mayus sin espacios
-        
+
         $em = $this->getDoctrine()->getManager();
+
+        $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
+        if (!$categoria) {
+            $success = false;
+            $message = "La categoria a la que se quiere asociar el nuevo producto no existe!";
+            $data = NULL;
+        }
+        
         $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $nombre]);
 
         if(!empty($duplicado)){
@@ -38,14 +46,13 @@ class ProductoController extends AbstractController
             $message = "Ya existe un producto con el nombre ingresado!";
             $data = NULL;
         }
-        else {
+        elseif(empty($duplicado) and $categoria) {
 
             $producto = new Producto();
             $producto->setNombre($nombre);
             $producto->setCodigoColor(trim($data['codigoColor']));
             $producto->setPrecio($data['precio']);
     
-            $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
             $producto->setCategoria($categoria);
     
             $em->persist($producto);
