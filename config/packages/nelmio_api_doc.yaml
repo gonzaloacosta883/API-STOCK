@@ -18,7 +18,8 @@ nelmio_api_doc:
                                     schema:
                                         type: object
                                         properties:
-                                            status: { type: string }
+                                            id: { type: integer, example: 1 }
+                                            nombre: { type: string, example: Bebidas }
             /categoria/add:
                 post:
                     description: Crea una categoria inexistente.
@@ -35,6 +36,16 @@ nelmio_api_doc:
                 get:
                     tags:
                         - Categorias
+                    responses:
+                        200:
+                            description: OK
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: { type: integer, example: 1 }
+                                            nombre: { type: string, example: Bebidas }
                     parameters:
                       - in: path
                         name: id
@@ -91,6 +102,23 @@ nelmio_api_doc:
                 get:
                     tags:
                         - Productos
+                    responses:
+                        200:
+                            description: OK
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: {type: integer, example: 1}
+                                            nombre: {type: string, example: Picadillo de carne Carrefour 90 g}
+                                            codigoColor: {type: string, example: 005BAA}
+                                            precio: {type: float, example: 50}
+                                            categoria: 
+                                                type: object
+                                                properties:
+                                                    id: {type: integer, example: 1}
+
                     parameters:
                       - in: path
                         name: id
@@ -99,11 +127,24 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id del producto que se quiere obtener
-
+            /deposito/add:
+                post:
+                    description: Crea un deposito inexistente.
+                    tags:
+                        - Depositos
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        nombre: {type: string, example: B1}
+                                        direccion: {type: string, example: Calle falsa 123}
 
         tags:
             - name: Categorias
             - name: Productos
+            - name: Depositos
 
     areas: # to filter documented areas
         path_patterns:

@@ -19,12 +19,17 @@ use OpenApi\Annotations as OA;
 class DepositoController extends AbstractController
 {
     /**
-     * @Route("/add", name="add_deposito", methods="{POST}")
+     * @Route("/add", name="add_deposito", methods="POST")
      */
     public function addDeposito(Request $request): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(), true);
+
+        if(empty($data['nombre']) or empty($data['direccion'])) 
+        {
+            throw new Exception("Error Processing Request, parametro/s indefinido/s", 1);
+        }
 
         $nombre = ucfirst(strtolower(trim($data['nombre'])));
         $direccion = ucfirst(strtolower(trim($data['direccion'])));
