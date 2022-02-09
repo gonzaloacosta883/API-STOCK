@@ -98,6 +98,23 @@ nelmio_api_doc:
                                             nombre: {type: string, example: Picadillo de carne Carrefour 90 g}
                                             codigoColor: {type: string, example: 005BAA}
                                             precio: {type: float, example: 50}
+                                            categoria: 
+                                                type: object
+                                                properties:
+                                                    id: {type: integer, example: 1}
+                                                    nombre: {type: string, example: bebidas}
+                                            foto: {type: string, example: null}
+                                            stocks:
+                                                type: object
+                                                properties:
+                                                    id: {type: integer, example: 1}
+                                                    deposito:
+                                                        type: object
+                                                        properties:
+                                                            id: {type: integer, example: 1}
+                                                            nombre: {type: string, example: B122}
+                                                            direccion: {type: string, example: Calle falsa 123}
+                                                            cantidad: {type: integer, example: 50}
             /producto/{id}:
                 get:
                     tags:
@@ -118,6 +135,19 @@ nelmio_api_doc:
                                                 type: object
                                                 properties:
                                                     id: {type: integer, example: 1}
+                                                    nombre: {type: string, example: bebidas}
+                                            foto: {type: string, example: null}
+                                            stocks:
+                                                type: object
+                                                properties:
+                                                    id: {type: integer, example: 1}
+                                                    deposito:
+                                                        type: object
+                                                        properties:
+                                                            id: {type: integer, example: 1}
+                                                            nombre: {type: string, example: B122}
+                                                            direccion: {type: string, example: Calle falsa 123}
+                                                            cantidad: {type: integer, example: 50}
 
                     parameters:
                       - in: path

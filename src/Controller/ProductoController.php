@@ -141,8 +141,7 @@ class ProductoController extends AbstractController
                             'id' => $stockDeposito->getDeposito()->getId(),
                             'nombre' => $stockDeposito->getDeposito()->getNombre(),
                             'direccion' => $stockDeposito->getDeposito()->getDireccion(),
-                            'cantidad' => $stockDeposito->getCantidad(),
-                            'unidades' => $stockDeposito->getUnidades()
+                            'cantidad' => $stockDeposito->getCantidad()
                         ],
                     ];
                     $response = new JsonResponse();

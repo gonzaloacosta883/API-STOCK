@@ -37,11 +37,6 @@ class StockDeposito
      */
     private $cantidad;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $unidades;
-
     public function __construct() {
         $this->cantidad = 0;
     }
@@ -87,17 +82,6 @@ class StockDeposito
     public function decrementarCantidad($cantidad)
     {
         $this->cantidad -= $cantidad;
-        return $this;
-    }
-
-    public function getUnidades()
-    {
-        return $this->unidades;
-    }
-
-    public function setUnidades($unidades)
-    {
-        $this->unidades = $unidades;
         return $this;
     }
 }
