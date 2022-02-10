@@ -2,16 +2,14 @@
 
 namespace App\Controller;
 
-use Exception;
 use App\Entity\Deposito;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #Nelmio\ApiDocBundle
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/deposito")
@@ -26,8 +24,7 @@ class DepositoController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(), true);
 
-        if(empty($data['nombre']) or empty($data['direccion'])) 
-        {
+        if (empty($data['nombre']) or empty($data['direccion'])) {
             throw new Exception("Error Processing Request, parametro/s indefinido/s", 1);
         }
 
@@ -104,7 +101,48 @@ class DepositoController extends AbstractController
      */
     public function getDepositoPorId($id)
     {
+        $message = null;
+        $data = null;
+        $success = true;
+        if (!is_null($id)) {
+            throw new Exception("Error Processing Request, id indefinido", 1);
+        } else {
+            $em = $this->getDoctrine()->getManager();
+            $deposito = $em->getRepository(Deposito::class)->find($id);
+            /*SI SE ENCONTRO EL DEPOSITO*/
+            if (!empty($deposito)) {
+                $data = [
+                    'id' => $deposito->getId(),
+                    'nombre' => $deposito->getNombre(),
+                    'direccion' => $deposito->getDireccion(),
+                    'stocks' => $stocks,
+                ];
+                $message = 'Operación Exitosa';
+            } else {
+                $message = 'Deposito no encontrada';
+                $success = false;
+            }
+        }
 
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data,
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/{id}/productos",
+     * name="get_productos_por_deposito",
+     * methods="GET",
+     * requirements={"id"="\d+"},
+     * defaults={"id": NULL}
+     * )
+     */
+    public function getProductosPorDeposito($id)
+    {
         $message = null;
         $data = null;
         $success = true;
@@ -130,12 +168,14 @@ class DepositoController extends AbstractController
                                 'id' => $inventarioDeposito[$i]->getProducto()->getCategoria()->getId(),
                                 'nombre' => $inventarioDeposito[$i]->getProducto()->getCategoria()->getNombre(),
                             ],
+                            'cantidad' => $inventarioDeposito[$i]->getCantidad(),
                         ],
                     ];
                 }
                 $data = [
                     'id' => $deposito->getId(),
                     'nombre' => $deposito->getNombre(),
+                    'direccion' => $deposito->getDireccion(),
                     'stocks' => $stocks,
                 ];
                 $message = 'Operación Exitosa';

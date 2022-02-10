@@ -134,7 +134,7 @@ class CategoriaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/get/productos/", name="get_productos_por_categoria", methods="GET")
+     * @Route("/{id}/productos", name="get_productos_por_categoria", methods="GET")
      */
     public function getProductosPorCategoria($id) {
         
@@ -144,19 +144,28 @@ class CategoriaController extends AbstractController
 
         $message = NULL;
         $data = NULL;
+        $arregloProductos = [];
 
         $em = $this->getDoctrine()->getManager();
         $productos = $em->getRepository(Producto::class)->findBy(['categoria' => intval($id)]);
+        $categoria = $em->getRepository(Categoria::class)->findBy($id);
 
         if (!empty($productos)) {
             foreach ($productos as $producto) {
-                $data[] = [
+                $unProducto = [
                     'id' => $producto->getId(),
                     'nombre' => $producto->getNombre(),
                     'precio' => $producto->getPrecio(),
                     'foto' => $producto->getFoto(),
-                ];    
+                ];
+                array_push($arregloProductos, $unProducto);
             }
+
+            $data = [
+                'id' => $categoria->getId(),
+                'nombre' => $categoria->getNombre(),
+                'productos' => $arregloProductos
+            ];
             
             $message = 'Operación Exitosa';
             $success = true;

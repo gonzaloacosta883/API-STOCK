@@ -38,7 +38,7 @@ nelmio_api_doc:
                         - Categorias
                     responses:
                         200:
-                            description: OK
+                            description: Devuelve información de la categoria solicitada por id
                             content:
                                 aplication/json:
                                     schema:
@@ -54,10 +54,25 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id de la categoria
-            /categoria/{id}/get/productos/:
+            /categoria/{id}/productos:
                 get:
                     tags:
                         - Categorias
+                    responses:
+                        200:
+                            description: Devuelve todos los productos pertenecientes a la categoria pasada por parametro
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: { type: integer, example: 1 }
+                                            nombre: { type: string, example: Bebidas }
+                                            productos:
+                                                type: object
+                                                properties:
+                                                    id: { type: integer, example: 1 }
+                                                    nombre: { type: string, example: Picadillo de carne 90g }
                     parameters:
                       - in: path
                         name: id
@@ -104,17 +119,6 @@ nelmio_api_doc:
                                                     id: {type: integer, example: 1}
                                                     nombre: {type: string, example: bebidas}
                                             foto: {type: string, example: null}
-                                            stocks:
-                                                type: object
-                                                properties:
-                                                    id: {type: integer, example: 1}
-                                                    deposito:
-                                                        type: object
-                                                        properties:
-                                                            id: {type: integer, example: 1}
-                                                            nombre: {type: string, example: B122}
-                                                            direccion: {type: string, example: Calle falsa 123}
-                                                            cantidad: {type: integer, example: 50}
             /producto/{id}:
                 get:
                     tags:
@@ -137,18 +141,6 @@ nelmio_api_doc:
                                                     id: {type: integer, example: 1}
                                                     nombre: {type: string, example: bebidas}
                                             foto: {type: string, example: null}
-                                            stocks:
-                                                type: object
-                                                properties:
-                                                    id: {type: integer, example: 1}
-                                                    deposito:
-                                                        type: object
-                                                        properties:
-                                                            id: {type: integer, example: 1}
-                                                            nombre: {type: string, example: B122}
-                                                            direccion: {type: string, example: Calle falsa 123}
-                                                            cantidad: {type: integer, example: 50}
-
                     parameters:
                       - in: path
                         name: id
@@ -170,6 +162,72 @@ nelmio_api_doc:
                                     properties:
                                         nombre: {type: string, example: B1}
                                         direccion: {type: string, example: Calle falsa 123}
+            /deposito/all:
+                get:
+                    tags:
+                        - Depositos
+                    responses:
+                        200:
+                            description: Devuelve todos los depositos existentes
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: {type: integer, example: 1}
+                                            nombre: {type: string, example: B1}
+                                            direccion: {type: string, example: Calle falsa 123}
+            /deposito/{id}:
+                get:
+                    tags:
+                        - Depositos
+                    responses:
+                        200:
+                            description: Devuelve un deposito por id
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: {type: integer, example: 1}
+                                            nombre: {type: string, example: B1}
+                                            direccion: {type: string, example: Calle falsa 123}
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id del deposito que se quiere obtener
+            /deposito/{id}/productos:
+                get:
+                    tags:
+                        - Depositos
+                    responses:
+                        200:
+                            description: Devuelve los productos existentes en el deposito pasado por parametro
+                            content:
+                                aplication/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            id: {type: integer, example: 1}
+                                            nombre: {type: string, example: B1}
+                                            direccion: {type: string, example: Calle falsa 123}
+                                            productos:
+                                                type: object
+                                                properties:
+                                                    id: {type: integer, example: 1}
+                                                    nombre: {type: string, example: Picadillo de carne Carrefour 90 g}
+                                                    codigoColor: {type: string, example: 005BAA}
+                                                    precio: {type: float, example: 50}
+                                                    categoria: 
+                                                        type: object
+                                                        properties:
+                                                            id: {type: integer, example: 1}
+                                                            nombre: {type: string, example: bebidas}
+                                                    cantidad: {type: integer, example: 50}
 
         tags:
             - name: Categorias

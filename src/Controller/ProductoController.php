@@ -131,23 +131,6 @@ class ProductoController extends AbstractController
             $producto = $em->getRepository(Producto::class)->find($id);
             
             if (!empty($producto)) {
-                
-                $stocksDeposito = $producto->getStocks();
-                /*INFORMACION SOBRE EL SOTCK DE DICHO PRODUCTO EN LOS DISTINTOS ALMACENES*/
-                foreach ($stocksDeposito as $stockDeposito) {
-                    $stocks[] = [
-                        'id' => $stockDeposito->getId(),
-                        'deposito' => [
-                            'id' => $stockDeposito->getDeposito()->getId(),
-                            'nombre' => $stockDeposito->getDeposito()->getNombre(),
-                            'direccion' => $stockDeposito->getDeposito()->getDireccion(),
-                            'cantidad' => $stockDeposito->getCantidad()
-                        ],
-                    ];
-                    $response = new JsonResponse();
-                    $response->setData($stocks);
-                }
-
                 $data = [
                     'id' => $producto->getId(),
                     'nombre' => $producto->getNombre(),
