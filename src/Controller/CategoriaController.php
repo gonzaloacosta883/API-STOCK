@@ -183,4 +183,40 @@ class CategoriaController extends AbstractController
         ]);
         return $response;
     }
+
+    /**
+     * @Route("/{id}/edit", name="categoria_edit", methods="PUT")
+     */
+    public function editCategoria($id, Request $request): JsonResponse 
+    {
+
+        $message = NULL;
+        $success = false;
+
+        $data = json_decode($request->getContent(),true);
+        if (empty($data['nombre'])) 
+            $message = 'Error: no se ingreso un nombre valido';
+        elseif (empty($id)) 
+            $message = 'Error: id de categoria invalido';
+        else {
+            
+            $em = $this->getDoctrine()->getManager();    
+            $categoria = $em->getRepository(Categoria::class)
+                ->find($id);
+
+            $categoria->setNombre(trim($data['nombre']));
+            $em->persist($categoria);
+            $em->flush();
+            $message = "Exito: categoria actualizada exitosamente";
+            $success = true;
+        }
+
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => NULL,
+        ]);
+        return $response;
+    }
 }

@@ -32,6 +32,28 @@ nelmio_api_doc:
                                     type: object
                                     properties:
                                         nombre: {type: string, example: bebidas}
+            /categoria/{id}/edit:
+                put:
+                    tags:
+                        - Categorias
+                    responses:
+                        200:
+                            description: Devuelve información de la categoria solicitada por id
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id de la categoria
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        nombre: {type: string, example: nuevoNombre}
             /categoria/{id}:
                 get:
                     tags:
