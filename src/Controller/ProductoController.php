@@ -158,4 +158,84 @@ class ProductoController extends AbstractController
         ]);
         return $response;
     }
+
+    /**
+     * @Route("/{id}/edit", name="producto_edit", methods="PUT")
+     */
+    public function edit($id, Request $request): JsonResponse
+    {
+        $success = false;
+        $message = NULL;
+        $errorFatal = false;
+        $categoria = NULL;
+
+        $data = json_decode($request->getContent(),true);
+
+        if (empty($id)) {
+            $success = false;
+            $message = 'Error: No ingreso un id valido';
+            $errorFatal = true;
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $producto = $em->getRepository(Producto::class)
+            ->find($id);
+        
+        if(!$producto)
+        {
+            $success = false;
+            $message = 'Error: No se encontro un producto para el id recibido por parametro';
+            $errorFatal = true;
+        }
+
+        if (
+            (isset($data['nombre']) and !empty($data['nombre'])) and//Si existe y no esta vacio
+            (isset($data['codigoColor']) and !empty($data['codigoColor'])) and//Si existe y no esta vacio
+            (isset($data['precio']) and !empty($data['precio'])) and//Si existe y no esta vacio
+            (isset($data['categoria']) and !empty($data['categoria'])) //Si existe y no esta vacio
+        ) {
+            $categoria = $em->getRepository(Categoria::class)
+                ->find($data['categoria']);
+            
+            if (!$categoria) {
+                $succes = false;
+                $message = "Error: La categoria ingresada no existe";
+                $errorFatal = true;
+            }
+        }
+        else {
+            $succes = false;
+            $message = "Error: todos los campos son requeridos y no deben estar vacios";
+            $errorFatal  = true;
+        }
+        
+        if($errorFatal == false)
+        {
+            
+            if ($categoria) {
+                $producto->setNombre($data['nombre']);
+                $producto->setCodigoColor($data['codigoColor']);
+                $producto->setPrecio($data['precio']);
+                $producto->setCategoria($categoria);
+                
+                $em->persist($producto);
+                $em->flush();
+
+                $success = true;
+                $message = "Exito: producto modificado exitosamente";
+            }
+            else {
+                $message = "Error: no se encontro la categoria recibida en el cuerpo de la solicitud";
+            }
+        }
+        
+        $response = new JsonResponse();
+        $response->setData([
+            'success' => $success,
+            'message' => $message,
+            'data' => NULL,
+        ]);
+        return $response;
+
+    }
 }

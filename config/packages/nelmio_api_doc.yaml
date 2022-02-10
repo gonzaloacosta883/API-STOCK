@@ -118,6 +118,31 @@ nelmio_api_doc:
                                         codigoColor: {type: string, example: 005BAA}
                                         precio: {type: float, example: 50}
                                         categoria: {type: integer, example: 2}
+            /producto/{id}/edit:
+                put:
+                    tags:
+                        - Productos
+                    responses:
+                        200:
+                            description: Edita atributos de la entidad producto.
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id del producto
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        nombre: {type: string, example: nuevoNombre}
+                                        codigoColor: {type: string, example: ffff}
+                                        precio: {type: integer, example: 50}
+                                        categoria: {type: integer, example: 2}
             /producto/all:
                 get:
                     description: Devuelve la lista de productos
