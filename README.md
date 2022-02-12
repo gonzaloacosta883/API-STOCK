@@ -20,3 +20,6 @@ php bin/console doctrine:schema:create
 symfony server:start
 localhost:8000/api/doc
 ```
+
+## Vista previa
+![vistaPrevia](https://user-images.githubusercontent.com/67175040/153690489-f5615fb4-94c8-4cdd-8364-d33c4448ccb9.png)
