@@ -247,4 +247,54 @@ class DepositoController extends AbstractController
             'data' => NULL,
         ]);
     }
+
+    /**
+     * @Route("/{id}/delete", name="deposito_delete", methods="DELETE")
+     */
+    public function deleteDeposito($id): JsonResponse
+    {
+
+        if (empty($id)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error: No ingreso un id valido',
+                'data' => NULL
+            ]);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $deposito = $em->getRepository(Deposito::class)
+            ->find($id);
+
+        if (!$deposito) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El deposito ingresado no existe",
+                'data' => NULL
+            ]);
+        }
+
+        $stockProductos = $deposito->getStocks();
+        foreach ($stockProductos as $stockProducto) {
+            if ($stockProducto->getCantidad() == 0) 
+                $em->remove($stockProducto);
+            else {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Error: No se pudo completar la eliminación del deposito ya que existe stock de al menos un producto, decremente el stock para poder realizar la eliminación",
+                    'data' => NULL
+                ]);
+            }
+        }
+
+        $em->remove($deposito);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Deposito eliminado exitosamente",
+            'data' => NULL
+        ]);
+
+    }
 }

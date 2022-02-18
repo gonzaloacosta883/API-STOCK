@@ -328,6 +328,21 @@ nelmio_api_doc:
                                                             id: {type: integer, example: 1}
                                                             nombre: {type: string, example: bebidas}
                                                     cantidad: {type: integer, example: 50}
+            /deposito/{id}/delete:
+                delete:
+                    tags:
+                        - Depositos
+                    responses:
+                        200:
+                            description: Elimina el deposito que contenga como id el recibido por parametro
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id del deposito que quiere eliminar
 
         tags:
             - name: Categorias
