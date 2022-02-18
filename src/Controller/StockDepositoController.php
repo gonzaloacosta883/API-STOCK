@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Deposito;
+use App\Entity\Producto;
 use Symfony\Component\HttpFoundation\Request;
+
+#Nelmio\ApiDocBundle
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,58 +19,73 @@ class StockDepositoController extends AbstractController
 {
 
     /**
-     * @Route("/incrementar", name="stock_deposito_incrementar")
-     * Recibe como argumentos un producto y la cantidad que se desea aumentar
+     * @Route("/incrementar", name="stock_deposito_incrementar", methods="POST")
      */
     public function incrementar(Request $request): JsonResponse
-    {
+    { 
+        //Verfico que los parametros requeridos no sea nulos
+        $data = json_decode($request->getContent(),true);
+        if( (!empty($data['idProducto'])) and (!empty($data['idDeposito'])) ){}
+        else {//uno o ambos ids son nulos
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: idProducto y/o idDepositos nulos",
+                'data' => NULL
+            ]);    
+        }
+
+        if ( (isset($data['cantidad'])) and (!empty($data['cantidad'])) ) {}
+        else {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Debe ingresar una cantidad valida",
+                'data' => NULL
+            ]);
+        }
 
         $em = $this->getDoctrine()->getManager();
-        $data = json_decode($request->getContent(),true);
-        $success = NULL;$message=NULL;$data=NULL;
+        $deposito = $em->getRepository(Deposito::class)
+            ->find($idDeposito);
+        $producto = $em->getRepository(Producto::class)
+            ->find($idProducto);
 
-        $producto = $em->getRepository(Producto::class)->find($data['producto']);
-        $deposito = $em->getRepository(Deposito::class)->find($data['deposito']);
+        if (!$deposito) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El deposito ingresado no existe",
+                'data' => NULL
+            ]);
+        }
 
         if (!$producto) {
-            $success = false;
-            $message = "Error: el producto ingresado no existe";
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El producto ingresado no existe",
+                'data' => NULL
+            ]);
         }
-        if(!deposito) {
-            $success = false;
-            $message = "Error: el deposito ingresado no existe";
-        }
-
-        if ($producto and deposito) {
             
-            /*Busco si existe el producto en el deposito*/
-            $existeEnDeposito = $em->getRepository(StockDeposito::class)
-                ->findOneBy(['producto' => $data['producto'], 'deposito' => $data['deposito']]);
+        /*Busco si existe el producto en el deposito*/
+        $existeEnDeposito = $em->getRepository(StockDeposito::class)
+            ->findOneBy(['producto' => $idProducto, 'deposito' => $idDeposito]);
     
-            if ($existeEnDeposito)
-                $existeEnDeposito->incrementarCantidad($data['cantidad']);
-            else {
-                $stockDeposito = new StockDeposito();
-                $stockDeposito->setProducto($producto);
-                $stockDeposito->setDeposito($deposito);
-                $stockDeposito->incrementarCantidad($data['cantidad']);
+        if ($existeEnDeposito)
+            $existeEnDeposito->incrementarCantidad($data['cantidad']);
+        else {
+            $stockDeposito = new StockDeposito();
+            $stockDeposito->setProducto($producto);
+            $stockDeposito->setDeposito($deposito);
+            $stockDeposito->incrementarCantidad($data['cantidad']);
     
-                $em->persist($stockDeposito);
-                $em->flush();
-    
-                $success = true;
-                $message = "Operación Exitosa";
-            }
+            $em->persist($stockDeposito);
+            $em->flush();
         }
 
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
+        return new JsonReponse([
+            'success' => true,
+            'message' => "Operación Exitosa",
             'data' => $data,
         ]);
-        return $response;
-
     }
 
     /**

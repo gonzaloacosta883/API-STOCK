@@ -343,11 +343,28 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id del deposito que quiere eliminar
+                                    
+            /stock/deposito/incrementar:
+                post:
+                    description: Crea un deposito inexistente.
+                    tags:
+                        - StockDeposito
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        idProducto: {type: integer, example: 2}
+                                        idDeposito: {type: integer, example: 1}
+                                        cantidad: {type: integer, example: 10}
+                    
 
         tags:
             - name: Categorias
             - name: Productos
             - name: Depositos
+            - name: StockDeposito
 
     areas: # to filter documented areas
         path_patterns:
