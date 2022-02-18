@@ -209,6 +209,29 @@ nelmio_api_doc:
                                     properties:
                                         nombre: {type: string, example: B1}
                                         direccion: {type: string, example: Calle falsa 123}
+            /deposito/{id}/edit:
+                put:
+                    tags:
+                        - Depositos
+                    responses:
+                        200:
+                            description: Edita atributos de la entidad deposito.
+                    parameters:
+                      - in: path
+                        name: id
+                        required: true
+                        schema:
+                            type: integer
+                            minimum: 1
+                        description: Id del deposito
+                    requestBody:
+                        content:
+                            aplication/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        nombre: {type: string, example: nuevoNombre}
+                                        direccion: {type: string, example: calle falsa 123}
             /deposito/all:
                 get:
                     tags:

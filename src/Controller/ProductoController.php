@@ -164,17 +164,13 @@ class ProductoController extends AbstractController
      */
     public function edit($id, Request $request): JsonResponse
     {
-        $success = false;
-        $message = NULL;
-        $errorFatal = false;
         $categoria = NULL;
-
-        $data = json_decode($request->getContent(),true);
-
         if (empty($id)) {
-            $success = false;
-            $message = 'Error: No ingreso un id valido';
-            $errorFatal = true;
+            return new JsonReponse([
+                'success' => false,
+                'message' => 'Error: No ingreso un id valido',
+                'data' => NULL,
+            ]);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -183,11 +179,14 @@ class ProductoController extends AbstractController
         
         if(!$producto)
         {
-            $success = false;
-            $message = 'Error: No se encontro un producto para el id recibido por parametro';
-            $errorFatal = true;
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error: No se encontro un producto para el id recibido por parametro',
+                'data' => NULL
+            ]);
         }
 
+        $data = json_decode($request->getContent(),true);
         if (
             (isset($data['nombre']) and !empty($data['nombre'])) and//Si existe y no esta vacio
             (isset($data['codigoColor']) and !empty($data['codigoColor'])) and//Si existe y no esta vacio
@@ -198,44 +197,44 @@ class ProductoController extends AbstractController
                 ->find($data['categoria']);
             
             if (!$categoria) {
-                $succes = false;
-                $message = "Error: La categoria ingresada no existe";
-                $errorFatal = true;
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Error: La categoria ingresada no existe",
+                    'data' => NULL
+                ]);
             }
         }
         else {
-            $succes = false;
-            $message = "Error: todos los campos son requeridos y no deben estar vacios";
-            $errorFatal  = true;
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: todos los campos son requeridos y no deben estar vacios",
+                'data' => NULL
+            ]);
         }
         
-        if($errorFatal == false)
-        {
-            
-            if ($categoria) {
-                $producto->setNombre($data['nombre']);
-                $producto->setCodigoColor($data['codigoColor']);
-                $producto->setPrecio($data['precio']);
-                $producto->setCategoria($categoria);
-                
-                $em->persist($producto);
-                $em->flush();
+        $success = false;
+        $message = NULL;
 
-                $success = true;
-                $message = "Exito: producto modificado exitosamente";
-            }
-            else {
-                $message = "Error: no se encontro la categoria recibida en el cuerpo de la solicitud";
-            }
+        if ($categoria) {
+            $producto->setNombre($data['nombre']);
+            $producto->setCodigoColor($data['codigoColor']);
+            $producto->setPrecio($data['precio']);
+            $producto->setCategoria($categoria);
+                
+            $em->persist($producto);
+            $em->flush();
+
+            $success = true;
+            $message = "Exito: producto modificado exitosamente";
+        }
+        else {
+            $message = "Error: no se encontro la categoria recibida en el cuerpo de la solicitud";
         }
         
-        $response = new JsonResponse();
-        $response->setData([
+        return new JsonReponse([
             'success' => $success,
             'message' => $message,
             'data' => NULL,
         ]);
-        return $response;
-
     }
 }

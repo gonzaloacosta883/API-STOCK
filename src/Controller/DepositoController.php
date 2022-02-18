@@ -193,4 +193,58 @@ class DepositoController extends AbstractController
         ]);
         return $response;
     }
+
+    /**
+     * @Route("/{id}/edit", name="get_productos_por_deposito", methods="PUT")
+     */
+    public function edit($id, Request $request): JsonResponse
+    {
+
+        if (empty($id)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error: No ingreso un id valido',
+                'data' => NULL
+            ]);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $deposito = $em->getRepository(Deposito::class)
+            ->find($id);
+            
+        if (!$deposito) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El deposito ingresado no existe",
+                'data' => NULL
+            ]);
+        }
+
+        $data = json_decode($request->getContent(),true);
+        if (
+            (isset($data['nombre']) and !empty($data['nombre'])) and//Si existe y no esta vacio
+            (isset($data['direccion']) and !empty($data['direccion']))//Si existe y no esta vacio
+        ) {
+        }
+        else {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: todos los campos son requeridos y no deben estar vacios",
+                'data' => NULL
+            ]);
+        }
+
+        $deposito->setNombre($data['nombre']);
+        $deposito->setDireccion($data['direccion']);
+
+        $em->persist($deposito);
+        $em->flush();
+
+        $response = new JsonResponse();
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Exito: deposito modificado exitosamente",
+            'data' => NULL,
+        ]);
+    }
 }
