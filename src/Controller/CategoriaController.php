@@ -219,4 +219,49 @@ class CategoriaController extends AbstractController
         ]);
         return $response;
     }
+
+    /**
+     * @Route("/{id}/delete", name="categoria_detele", methods="DELETE")
+     */
+    public function deleteCategoria($id): JsonResponse
+    {
+
+        if (empty($id)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error: No ingreso un id valido',
+                'data' => NULL
+            ]);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $categoria = $em->getRepository(Categoria::class)
+            ->find($id);
+
+        if (!$categoria) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: La categoria ingresada no existe",
+                'data' => NULL
+            ]);
+        }
+
+        if (count($categoria->getProductos()) >= 1) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: La categoria ingresada posee productos asociados, elimine primero los productos o modifique su categoria para poder eliminar la misma",
+                'data' => NULL
+            ]);
+        }
+
+        $em->remove($categoria);
+        $em->flush();
+
+        $response = new JsonResponse();
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Categoria eliminada exitosamente",
+            'data' => NULL,
+        ]);
+    }
 }

@@ -237,4 +237,52 @@ class ProductoController extends AbstractController
             'data' => NULL,
         ]);
     }
+
+    /**
+     * @Route("/{id}/delete", name="producto_detele", methods="DELETE")
+     */
+    public function deleteProducto($id) {
+        
+        if (empty($id)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error: No ingreso un id valido',
+                'data' => NULL
+            ]);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $producto = $em->getRepository(Producto::class)
+            ->find($id);
+
+        if (!$producto) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El producto ingresado no existe",
+                'data' => NULL
+            ]);
+        }
+        //- No tiene que tener stock en los depositos en los que se encuentre
+        $stockDepositos = $producto->getStocks();
+        foreach ($stockDepositos as $stockDeposito) {
+            if ($stockDeposito->getCantidad() == 0) 
+                $em->remove($stockDeposito);
+            else {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Error: No se pudo completar la eliminación del producto ya que existe stock del producto que se quiere eliminar en depositos",
+                    'data' => NULL
+                ]); 
+            }
+        }
+        $em->remove($producto);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Producto eliminado exitosamente",
+            'data' => NULL
+        ]);
+
+    }
 }
