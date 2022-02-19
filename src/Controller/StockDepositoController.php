@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Deposito;
 use App\Entity\Producto;
-use Symfony\Component\HttpFoundation\Request;
 
-#Nelmio\ApiDocBundle
+use App\Entity\StockDeposito;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,10 +22,14 @@ class StockDepositoController extends AbstractController
      * @Route("/incrementar", name="stock_deposito_incrementar", methods="POST")
      */
     public function incrementar(Request $request): JsonResponse
-    { 
+    {
         //Verfico que los parametros requeridos no sea nulos
         $data = json_decode($request->getContent(),true);
-        if( (!empty($data['idProducto'])) and (!empty($data['idDeposito'])) ){}
+        
+        if( 
+            (!empty($data['idProducto'])) and 
+            (!empty($data['idDeposito'])) 
+        ){}
         else {//uno o ambos ids son nulos
             return new JsonResponse([
                 'success' => false,
@@ -45,9 +49,9 @@ class StockDepositoController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
         $deposito = $em->getRepository(Deposito::class)
-            ->find($idDeposito);
+            ->find($data['idDeposito']);
         $producto = $em->getRepository(Producto::class)
-            ->find($idProducto);
+            ->find($data['idProducto']);
 
         if (!$deposito) {
             return new JsonResponse([
@@ -67,7 +71,7 @@ class StockDepositoController extends AbstractController
             
         /*Busco si existe el producto en el deposito*/
         $existeEnDeposito = $em->getRepository(StockDeposito::class)
-            ->findOneBy(['producto' => $idProducto, 'deposito' => $idDeposito]);
+            ->findOneBy(['producto' => $data['idProducto'], 'deposito' => $data['idDeposito']]);
     
         if ($existeEnDeposito)
             $existeEnDeposito->incrementarCantidad($data['cantidad']);
@@ -81,15 +85,15 @@ class StockDepositoController extends AbstractController
             $em->flush();
         }
 
-        return new JsonReponse([
+        return new JsonResponse([
             'success' => true,
             'message' => "Operación Exitosa",
-            'data' => $data,
+            'data' => NULL,
         ]);
     }
 
     /**
-     * @Route("/decrementar", name="stock_deposito_incrementar")
+     * @Route("/decrementar", name="stock_deposito_decrementar")
      * Recibe como argumentos un producto y la cantidad que se desea aumentar
      */
     public function decrementar(Request $request): JsonResponse 
