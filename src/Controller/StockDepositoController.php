@@ -27,8 +27,8 @@ class StockDepositoController extends AbstractController
         $data = json_decode($request->getContent(),true);
         
         if( 
-            (!empty($data['idProducto'])) and 
-            (!empty($data['idDeposito'])) 
+            ( (isset($data['idProducto'])) and (!empty($data['idProducto'])) ) and 
+            ( (isset($data['idDeposito'])) and (!empty($data['idDeposito'])) )
         ){}
         else {//uno o ambos ids son nulos
             return new JsonResponse([
@@ -37,6 +37,24 @@ class StockDepositoController extends AbstractController
                 'data' => NULL
             ]);    
         }
+
+        //Verifico el tipo de los datos recibidos
+        if (gettype($data['idProducto']) != 'integer') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El idProducto debe ser un dato de tipo numerico",
+                'data' => NULL,
+            ]);
+        }
+
+        if (gettype($data['idDeposito']) != 'integer') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El idDeposito debe ser un dato de tipo numerico",
+                'data' => NULL,
+            ]);
+        }
+
 
         if ( (isset($data['cantidad'])) and (!empty($data['cantidad'])) ) {}
         else {
@@ -73,17 +91,18 @@ class StockDepositoController extends AbstractController
         $existeEnDeposito = $em->getRepository(StockDeposito::class)
             ->findOneBy(['producto' => $data['idProducto'], 'deposito' => $data['idDeposito']]);
     
-        if ($existeEnDeposito)
+        if ($existeEnDeposito) {
             $existeEnDeposito->incrementarCantidad($data['cantidad']);
+            $em->persist($existeEnDeposito);
+        }
         else {
             $stockDeposito = new StockDeposito();
             $stockDeposito->setProducto($producto);
             $stockDeposito->setDeposito($deposito);
             $stockDeposito->incrementarCantidad($data['cantidad']);
-    
             $em->persist($stockDeposito);
-            $em->flush();
         }
+        $em->flush();
 
         return new JsonResponse([
             'success' => true,
@@ -101,7 +120,6 @@ class StockDepositoController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(),true);
-        $success = NULL;$message=NULL;$data=NULL;
 
         $producto = $em->getRepository(Producto::class)->find($data['producto']);
         $deposito = $em->getRepository(Deposito::class)->find($data['deposito']);

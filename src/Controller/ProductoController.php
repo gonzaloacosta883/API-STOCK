@@ -120,7 +120,6 @@ class ProductoController extends AbstractController
         $message = NULL;
         $data = NULL;
         $success = true;
-        $stocks = [];
         
         if (is_null($id)) {
             throw new Exception("Error Processing Request, id indefinido", 1);
@@ -140,8 +139,7 @@ class ProductoController extends AbstractController
                         'id' => $producto->getCategoria()->getId(),
                         'nombre' => $producto->getCategoria()->getNombre()
                     ],
-                    'foto' => $producto->getFoto(),
-                    'stocks' => $stocks
+                    'foto' => $producto->getFoto()
                 ];
                 $message = 'Operación Exitosa';
             }
