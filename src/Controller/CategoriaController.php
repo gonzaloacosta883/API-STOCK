@@ -23,43 +23,49 @@ class CategoriaController extends AbstractController
     public function addCategoria(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(),true);
-        $nombre = $data['nombre'];
-        $message = NULL;
-        $success = NULL;
+        if( 
+            ( (isset($data['nombre'])) and (!empty($data['nombre'])) )
+        ){}
+        else {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Nombre nulo",
+                'data' => NULL
+            ]);
+        }
 
-        strtoupper(trim($nombre));//Mayus sin espacios
+        $nombreCategoria = strtoupper(trim($data['nombre']));//Mayuscula sin espacios
 
-        if (empty($nombre))
-            throw new Exception("Error Processing Request", 1);
+        if (gettype($nombreCategoria) != 'string') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Nombre debe ser una cadena",
+                'data' => NULL
+            ]);
+        }
 
-        //Verifico que no exista
         $em = $this->getDoctrine()->getManager();
         $duplicado = $em->getRepository(Categoria::class)
             ->findBy(['nombre' => $nombre]);
 
         if ($duplicado) {
-            $message = "Error: registro duplicado";
-            $success = false;
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Ya existe una categoria con el nombre ingresado",
+                'data' => NULL
+            ]);
         }
-        else {
+        
+        $categoria = new Categoria();
+        $categoria->setNombre($nombre);
+        $em->persist($categoria);
+        $em->flush();
 
-            $categoria = new Categoria();
-            $categoria->setNombre($nombre);
-            $em->persist($categoria);
-            $em->flush();
-
-            $message = "Operacion Exitosa";
-            $success = true;
-        }
-
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Exito: Operación Exitosa",
             'data' => NULL,
         ]);
-
-        return $response;
     }
 
     /**
