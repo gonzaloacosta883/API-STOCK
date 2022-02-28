@@ -72,6 +72,7 @@ class CategoriaController extends AbstractController
      * @Route("/all", name="get_categorias", methods="GET")
      */
     public function getCategorias() {
+        
         $em = $this->getDoctrine()->getManager();
         $categorias = $em->getRepository(Categoria::class)->findAll();
         $arregloCategorias = [];
@@ -108,35 +109,34 @@ class CategoriaController extends AbstractController
     public function getCategoriaPorId($id){
         
         if (is_null($id)) {
-            throw new Exception("Error Processing Request, id indefinido", 1);
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Error: debe ingresar un id valido",
+                'data' => NULL,
+            ]);
         }
-        
-        $message = NULL;
-        $data = NULL;
 
         $em = $this->getDoctrine()->getManager();
         $categoria = $em->getRepository(Categoria::class)->find($id);
 
-        if (!empty($categoria)) {
-            $data = [
-                'id' => $categoria->getId(),
-                'nombre' => $categoria->getNombre(),
-            ];
-            $message = 'Operación Exitosa';
-            $success = true;
+        if (!$categoria) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Error: Categoria no encontrada",
+                'data' => NULL,
+            ]);
         }
-        else {
-            $message = 'Categoria no encontrada';
-            $success = false;
-        }
+        
+        $data = [
+            'id' => $categoria->getId(),
+            'nombre' => $categoria->getNombre(),
+        ];
 
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data,
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Exito: Operación Exitosa",
+            'data' => $data
         ]);
-        return $response;
     }
 
     /**
@@ -145,49 +145,56 @@ class CategoriaController extends AbstractController
     public function getProductosPorCategoria($id) {
         
         if (is_null($id)) {
-            throw new Exception("Error Processing Request, id indefinido", 1);
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Error: debe ingresar un id valido",
+                'data' => NULL,
+            ]);
         }
 
-        $message = NULL;
-        $data = NULL;
+        if (gettype($id) != 'integer') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El id debe ser de tipo numerico",
+                'data' => NULL,
+            ]);
+        }
+
         $arregloProductos = [];
 
         $em = $this->getDoctrine()->getManager();
-        $productos = $em->getRepository(Producto::class)->findBy(['categoria' => intval($id)]);
+        $productos = $em->getRepository(Producto::class)->findBy(['categoria' => $id]);
         $categoria = $em->getRepository(Categoria::class)->findBy($id);
 
-        if (!empty($productos)) {
-            foreach ($productos as $producto) {
-                $unProducto = [
-                    'id' => $producto->getId(),
-                    'nombre' => $producto->getNombre(),
-                    'precio' => $producto->getPrecio(),
-                    'foto' => $producto->getFoto(),
-                ];
-                array_push($arregloProductos, $unProducto);
-            }
-
-            $data = [
-                'id' => $categoria->getId(),
-                'nombre' => $categoria->getNombre(),
-                'productos' => $arregloProductos
+        if (!$productos) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "No existen productos para la categoria solicitada",
+                'data' => NULL
+            ]);
+        }
+        
+        foreach ($productos as $producto) {
+            $unProducto = [
+                'id' => $producto->getId(),
+                'nombre' => $producto->getNombre(),
+                'precio' => $producto->getPrecio(),
+                'foto' => $producto->getFoto(),
             ];
-            
-            $message = 'Operación Exitosa';
-            $success = true;
-        }
-        else {
-            $message = 'No existen productos para la categoria solicitada!';
-            $success = false;
+            array_push($arregloProductos, $unProducto);
         }
 
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
+        $data = [
+            'id' => $categoria->getId(),
+            'nombre' => $categoria->getNombre(),
+            'productos' => $arregloProductos
+        ];
+
+        return new JsonReponse([
+            'success' => true,
+            'message' => "Exito: Operación Exitosa",
             'data' => $data,
         ]);
-        return $response;
     }
 
     /**
@@ -195,35 +202,64 @@ class CategoriaController extends AbstractController
      */
     public function editCategoria($id, Request $request): JsonResponse 
     {
-
-        $message = NULL;
-        $success = false;
-
-        $data = json_decode($request->getContent(),true);
-        if (empty($data['nombre'])) 
-            $message = 'Error: no se ingreso un nombre valido';
-        elseif (empty($id)) 
-            $message = 'Error: id de categoria invalido';
-        else {
-            
-            $em = $this->getDoctrine()->getManager();    
-            $categoria = $em->getRepository(Categoria::class)
-                ->find($id);
-
-            $categoria->setNombre(trim($data['nombre']));
-            $em->persist($categoria);
-            $em->flush();
-            $message = "Exito: categoria actualizada exitosamente";
-            $success = true;
+        if (is_null($id)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Error: debe ingresar un id valido",
+                'data' => NULL,
+            ]);
         }
 
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
+        if (gettype($id) != 'integer') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: El id debe ser de tipo numerico",
+                'data' => NULL,
+            ]);
+        }
+
+        $data = json_decode($request->getContent(),true);
+
+        if( (isset($data['nombre'])) and (!empty($data['nombre'])) ){}
+        else {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Debe ingresar un nombre",
+                'data' => NULL,
+            ]);
+        }
+
+        if (gettype($data['nombre']) != 'string') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Nombre debe ser una cadena",
+                'data' => NULL
+            ]);
+        }
+            
+        $em = $this->getDoctrine()->getManager();    
+        $categoria = $em->getRepository(Categoria::class)
+            ->find($id);
+        
+        if (!$categoria) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: La categoria solicitada no existe",
+                'data' => NULL,
+            ]);
+        }
+        
+        $nombreCategoria = strtoupper(trim($data['nombre']));
+
+        $categoria->setNombre($nombreCategoria);
+        $em->persist($categoria);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Exito: Categoria editada",
             'data' => NULL,
         ]);
-        return $response;
     }
 
     /**
@@ -263,7 +299,6 @@ class CategoriaController extends AbstractController
         $em->remove($categoria);
         $em->flush();
 
-        $response = new JsonResponse();
         return new JsonResponse([
             'success' => true,
             'message' => "Categoria eliminada exitosamente",
