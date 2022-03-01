@@ -55,7 +55,7 @@ class StockDepositoController extends AbstractController
         }
 
 
-        if ( (isset($data['cantidad'])) and (!empty($data['cantidad'])) ) {}
+        if ( (isset($data['cantidad'])) and (!empty($data['cantidad'])) and (gettype($data['cantidad']) != 'integer') ) {}
         else {
             return new JsonResponse([
                 'success' => false,

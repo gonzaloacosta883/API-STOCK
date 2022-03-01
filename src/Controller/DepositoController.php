@@ -222,25 +222,24 @@ class DepositoController extends AbstractController
 
         $data = json_decode($request->getContent(),true);
         if (
-            (isset($data['nombre']) and !empty($data['nombre'])) and//Si existe y no esta vacio
-            (isset($data['direccion']) and !empty($data['direccion']))//Si existe y no esta vacio
+            (isset($data['nombre']) and (!empty($data['nombre'])) and (gettype($data['nombre']) != 'string')) and//Si existe y no esta vacio
+            (isset($data['direccion']) and (!empty($data['direccion'])) and (gettype($data['nombre']) != 'string'))//Si existe y no esta vacio
         ) {
         }
         else {
             return new JsonResponse([
                 'success' => false,
-                'message' => "Error: todos los campos son requeridos y no deben estar vacios",
+                'message' => "Error: todos los campos son requeridos, no deben estar vacios y sus tipos deben coincidir con el ejemplo",
                 'data' => NULL
             ]);
         }
 
-        $deposito->setNombre($data['nombre']);
-        $deposito->setDireccion($data['direccion']);
+        $deposito->setNombre(strtoupper(trim($data['nombre'])));
+        $deposito->setDireccion(strtoupper(trim($data['direccion'])));
 
         $em->persist($deposito);
         $em->flush();
 
-        $response = new JsonResponse();
         return new JsonResponse([
             'success' => true,
             'message' => "Exito: deposito modificado exitosamente",
@@ -292,7 +291,7 @@ class DepositoController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'message' => "Deposito eliminado exitosamente",
+            'message' => "Exito: Deposito eliminado",
             'data' => NULL
         ]);
 
