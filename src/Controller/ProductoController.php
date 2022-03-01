@@ -24,57 +24,69 @@ class ProductoController extends AbstractController
     {
 
         $data = json_decode($request->getContent(),true);
-        $success = NULL;
-        $message=NULL;
+        
+        //Validaciones del producto que se va a crear
+        if ( (isset($data['nombre'])) and (!empty($data['nombre'])) and (gettype($data['nombre']) != 'string') ) {}
+        else {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Debe ingresar un nombre valido",
+                'data' => NULL
+            ]);
+        }
 
-        $nombre = $data['nombre'];
-        strtoupper(trim($nombre));//Mayus sin espacios
+        if ( (isset($data['categoria'])) and (!empty($data['categoria'])) and (gettype($data['categoria']) != 'integer') ) {}
+        else {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Debe ingresar una categoria valida",
+                'data' => NULL
+            ]);
+        }
 
         $em = $this->getDoctrine()->getManager();
 
         $categoria = $em->getRepository(Categoria::class)->find($data['categoria']);
         if (!$categoria) {
-            $success = false;
-            $message = "La categoria a la que se quiere asociar el nuevo producto no existe!";
-            $data = NULL;
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: La categoria a la que se quiere asociar el nuevo producto no existe",
+                'data' => NULL
+            ]);
         }
         
-        $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $nombre]);
-
+        $nombreProducto = strtoupper(trim($data['nombre']));
+        $duplicado = $em->getRepository(Producto::class)->findOneBy(['nombre' => $nombreProducto]);
         if(!empty($duplicado)){
-            $success = false;
-            $message = "Ya existe un producto con el nombre ingresado!";
-            $data = NULL;
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: Ya existe un producto con el nombre ingresado",
+                'data' => NULL
+            ]);
         }
-        elseif(empty($duplicado) and $categoria) {
 
-            $producto = new Producto();
-            $producto->setNombre($nombre);
-            $producto->setCodigoColor(trim($data['codigoColor']));
-            $producto->setPrecio($data['precio']);
+        $producto = new Producto();
+        $producto->setNombre($nombre);
+        $producto->setCodigoColor(strtoupper(trim($data['codigoColor'])));
+        $producto->setPrecio($data['precio']);
     
-            $producto->setCategoria($categoria);
+        $producto->setCategoria($categoria);
     
-            $em->persist($producto);
-            $em->flush();
-            $success = true;
-            $message = "Operación Exitosa";
-            $data = NULL;
-        }
+        $em->persist($producto);
+        $em->flush();
         
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data,
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Exito: Producto creado",
+            'data' => NULL,
         ]);
-        return $response;
     }
 
     /**
      * @Route("/all", name="get_productos", methods="GET")
      */
     public function getProductos() {
+        
         $em = $this->getDoctrine()->getManager();
         $productos = $em->getRepository(Producto::class)->findAll();
         $arregloProductos = [];
@@ -116,45 +128,44 @@ class ProductoController extends AbstractController
      * )
      */
     public function getProductoPorId($id){
-
-        $message = NULL;
-        $data = NULL;
-        $success = true;
         
         if (is_null($id)) {
-            throw new Exception("Error Processing Request, id indefinido", 1);
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Error: debe ingresar un id valido",
+                'data' => NULL,
+            ]);
         }
-        else {
+        
 
-            $em = $this->getDoctrine()->getManager();
-            $producto = $em->getRepository(Producto::class)->find($id);
+        $em = $this->getDoctrine()->getManager();
+        $producto = $em->getRepository(Producto::class)->find($id);
             
-            if (!empty($producto)) {
-                $data = [
-                    'id' => $producto->getId(),
-                    'nombre' => $producto->getNombre(),
-                    'precio' => $producto->getPrecio(),
-                    'codigoColor' => $producto->getCodigoColor(),
-                    'categoria' => [
-                        'id' => $producto->getCategoria()->getId(),
-                        'nombre' => $producto->getCategoria()->getNombre()
-                    ],
-                    'foto' => $producto->getFoto()
-                ];
-                $message = 'Operación Exitosa';
-            }
-            else {
-                $message = 'Producto no encontrado';
-            }
+        if (!empty($producto)) {
+            $data = [
+                'id' => $producto->getId(),
+                'nombre' => $producto->getNombre(),
+                'precio' => $producto->getPrecio(),
+                'codigoColor' => $producto->getCodigoColor(),
+                'categoria' => [
+                    'id' => $producto->getCategoria()->getId(),
+                    'nombre' => $producto->getCategoria()->getNombre()
+                ],
+                'foto' => $producto->getFoto()
+            ];
+            
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Exito: Producto encontrado',
+                'data' => $data,
+            ]);
         }
 
-        $response = new JsonResponse();
-        $response->setData([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data,
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Error: Producto no encontrado',
+            'data' => NULL,
         ]);
-        return $response;
     }
 
     /**
@@ -162,7 +173,7 @@ class ProductoController extends AbstractController
      */
     public function edit($id, Request $request): JsonResponse
     {
-        $categoria = NULL;
+        
         if (empty($id)) {
             return new JsonReponse([
                 'success' => false,
@@ -186,52 +197,41 @@ class ProductoController extends AbstractController
 
         $data = json_decode($request->getContent(),true);
         if (
-            (isset($data['nombre']) and !empty($data['nombre'])) and//Si existe y no esta vacio
-            (isset($data['codigoColor']) and !empty($data['codigoColor'])) and//Si existe y no esta vacio
-            (isset($data['precio']) and !empty($data['precio'])) and//Si existe y no esta vacio
-            (isset($data['categoria']) and !empty($data['categoria'])) //Si existe y no esta vacio
-        ) {
-            $categoria = $em->getRepository(Categoria::class)
-                ->find($data['categoria']);
-            
-            if (!$categoria) {
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => "Error: La categoria ingresada no existe",
-                    'data' => NULL
-                ]);
-            }
-        }
+            (isset($data['nombre']) and (!empty($data['nombre'])) and (gettype($data['nombre']) != 'string') ) and//Si existe y no esta vacio
+            (isset($data['codigoColor']) and (!empty($data['codigoColor'])) and (gettype($data['nombre']) != 'string')) and//Si existe y no esta vacio
+            (isset($data['precio']) and (!empty($data['precio'])) and (gettype($data['nombre']) != 'double')) and//Si existe y no esta vacio
+            (isset($data['categoria']) and (!empty($data['categoria'])) and (gettype($data['nombre']) != 'integer')) //Si existe y no esta vacio
+        ) {}
         else {
             return new JsonResponse([
                 'success' => false,
-                'message' => "Error: todos los campos son requeridos y no deben estar vacios",
+                'message' => "Error: todos los campos son requeridos, no deben estar vacios y sus tipos deben coincidir con el ejemplo",
                 'data' => NULL
             ]);
         }
         
-        $success = false;
-        $message = NULL;
+        $categoria = $em->getRepository(Categoria::class)
+            ->find($data['categoria']);
+            
+        if (!$categoria) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Error: no se encontro la categoria recibida en el cuerpo de la solicitud",
+                'data' => NULL
+            ]);
+        }
 
-        if ($categoria) {
-            $producto->setNombre($data['nombre']);
-            $producto->setCodigoColor($data['codigoColor']);
-            $producto->setPrecio($data['precio']);
-            $producto->setCategoria($categoria);
+        $producto->setNombre($data['nombre']);
+        $producto->setCodigoColor($data['codigoColor']);
+        $producto->setPrecio($data['precio']);
+        $producto->setCategoria($categoria);
                 
-            $em->persist($producto);
-            $em->flush();
-
-            $success = true;
-            $message = "Exito: producto modificado exitosamente";
-        }
-        else {
-            $message = "Error: no se encontro la categoria recibida en el cuerpo de la solicitud";
-        }
+        $em->persist($producto);
+        $em->flush();
         
         return new JsonReponse([
-            'success' => $success,
-            'message' => $message,
+            'success' => true,
+            'message' => "Exito: producto modificado",
             'data' => NULL,
         ]);
     }
