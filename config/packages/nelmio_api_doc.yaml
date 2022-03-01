@@ -3,9 +3,9 @@ nelmio_api_doc:
         info:
             title: Api stock
             description: Servicio para el control de stock de productos!
-            version: 0.1.0
+            version: 1.0.0
         paths:
-            /categoria/all:
+            /api/1.0/categoria/all:
                 get:
                     description: Devuelve todas las categorias de productos.
                     tags:
@@ -20,7 +20,7 @@ nelmio_api_doc:
                                         properties:
                                             id: { type: integer, example: 1 }
                                             nombre: { type: string, example: Bebidas }
-            /categoria/add:
+            /api/1.0/categoria/add:
                 post:
                     description: Crea una categoria inexistente.
                     tags:
@@ -32,7 +32,7 @@ nelmio_api_doc:
                                     type: object
                                     properties:
                                         nombre: {type: string, example: bebidas}
-            /categoria/{id}/edit:
+            /api/1.0/categoria/{id}/edit:
                 put:
                     tags:
                         - Categorias
@@ -54,7 +54,7 @@ nelmio_api_doc:
                                     type: object
                                     properties:
                                         nombre: {type: string, example: nuevoNombre}
-            /categoria/{id}:
+            /api/1.0/categoria/{id}:
                 get:
                     tags:
                         - Categorias
@@ -76,7 +76,7 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id de la categoria
-            /categoria/{id}/delete:
+            /api/1.0/categoria/{id}/delete:
                 delete:
                     tags:
                         - Categorias
@@ -91,7 +91,7 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id de la categoria que quiere eliminar
-            /categoria/{id}/productos:
+            /api/1.0/categoria/{id}/productos:
                 get:
                     tags:
                         - Categorias
@@ -118,7 +118,7 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id de la categoria de las cuales se quiere obtener los productos
-            /producto/add:
+            /api/1.0/producto/add:
                 post:
                     description: Crea un producto y lo asocia a una categoria
                     tags: 
@@ -133,7 +133,7 @@ nelmio_api_doc:
                                         codigoColor: {type: string, example: 005BAA}
                                         precio: {type: float, example: 50}
                                         categoria: {type: integer, example: 2}
-            /producto/{id}/edit:
+            /api/1.0/producto/{id}/edit:
                 put:
                     tags:
                         - Productos
@@ -158,7 +158,7 @@ nelmio_api_doc:
                                         codigoColor: {type: string, example: ffff}
                                         precio: {type: integer, example: 50}
                                         categoria: {type: integer, example: 2}
-            /producto/all:
+            /api/1.0/producto/all:
                 get:
                     description: Devuelve la lista de productos
                     tags:
@@ -181,7 +181,7 @@ nelmio_api_doc:
                                                     id: {type: integer, example: 1}
                                                     nombre: {type: string, example: bebidas}
                                             foto: {type: string, example: null}
-            /producto/{id}:
+            /api/1.0/producto/{id}:
                 get:
                     tags:
                         - Productos
@@ -211,7 +211,7 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id del producto que se quiere obtener
-            /producto/{id}/delete:
+            /api/1.0/producto/{id}/delete:
                 delete:
                     tags:
                         - Productos
@@ -226,7 +226,7 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id del producto que quiere eliminar
-            /deposito/add:
+            /api/1.0/deposito/add:
                 post:
                     description: Crea un deposito inexistente.
                     tags:
@@ -239,7 +239,7 @@ nelmio_api_doc:
                                     properties:
                                         nombre: {type: string, example: B1}
                                         direccion: {type: string, example: Calle falsa 123}
-            /deposito/{id}/edit:
+            /api/1.0/deposito/{id}/edit:
                 put:
                     tags:
                         - Depositos
@@ -262,7 +262,7 @@ nelmio_api_doc:
                                     properties:
                                         nombre: {type: string, example: nuevoNombre}
                                         direccion: {type: string, example: calle falsa 123}
-            /deposito/all:
+            /api/1.0/deposito/all:
                 get:
                     tags:
                         - Depositos
@@ -277,7 +277,7 @@ nelmio_api_doc:
                                             id: {type: integer, example: 1}
                                             nombre: {type: string, example: B1}
                                             direccion: {type: string, example: Calle falsa 123}
-            /deposito/{id}:
+            /api/1.0/deposito/{id}:
                 get:
                     tags:
                         - Depositos
@@ -300,7 +300,7 @@ nelmio_api_doc:
                             type: integer
                             minimum: 1
                         description: Id del deposito que se quiere obtener
-            /deposito/{id}/productos:
+            /api/1.0/deposito/{id}/productos:
                 get:
                     tags:
                         - Depositos
@@ -328,7 +328,7 @@ nelmio_api_doc:
                                                             id: {type: integer, example: 1}
                                                             nombre: {type: string, example: bebidas}
                                                     cantidad: {type: integer, example: 50}
-            /deposito/{id}/delete:
+            /api/1.0/deposito/{id}/delete:
                 delete:
                     tags:
                         - Depositos
@@ -344,7 +344,7 @@ nelmio_api_doc:
                             minimum: 1
                         description: Id del deposito que quiere eliminar
                                     
-            /stock/deposito/incrementar:
+            /api/1.0/stock/deposito/incrementar:
                 post:
                     description: Crea un deposito inexistente.
                     tags:
@@ -358,7 +358,7 @@ nelmio_api_doc:
                                         idProducto: {type: integer, example: 2}
                                         idDeposito: {type: integer, example: 1}
                                         cantidad: {type: integer, example: 10}
-            /stock/deposito/decrementar:
+            /api/1.0/stock/deposito/decrementar:
                 put:
                     description: Decrementa la cantida de unidades disponibles de un producto en un deposito.
                     tags:
@@ -382,4 +382,4 @@ nelmio_api_doc:
 
     areas: # to filter documented areas
         path_patterns:
-            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
+            - ^/api(?!/doc|/doc.json$) # Accepts routes under /api except /api/doc

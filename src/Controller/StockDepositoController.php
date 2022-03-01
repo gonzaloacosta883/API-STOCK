@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @Route("/stock/deposito")
+ * @Route("/api/1.0/stock/deposito")
  */
 class StockDepositoController extends AbstractController
 {

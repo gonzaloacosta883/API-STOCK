@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @Route("/categoria")
+ * @Route("/api/1.0/categoria")
  */
 class CategoriaController extends AbstractController
 {

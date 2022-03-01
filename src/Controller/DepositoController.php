@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/deposito")
+ * @Route("/api/1.0/deposito")
  */
 class DepositoController extends AbstractController
 {
