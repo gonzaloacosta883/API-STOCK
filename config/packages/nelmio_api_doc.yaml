@@ -3,7 +3,7 @@ nelmio_api_doc:
         info:
             title: Api stock
             description: Servicio para el control de stock de productos!
-            version: 1.0.1
+            version: 1.1.0
         paths:
             /_api/1.0/categoria/all:
                 get:
