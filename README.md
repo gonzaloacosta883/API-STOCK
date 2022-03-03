@@ -21,5 +21,15 @@ symfony server:start
 localhost:8000/api/doc
 ```
 
+###Versiones
+                    
+Version  | Descripción
+------------- | -------------
+1.0.1  | Versión estable sin seguridad
+1.1.0  | Basic Authentication
+
+User: admin
+password: api_stock
+
 ## Vista previa
 ![vistaPrevia](https://user-images.githubusercontent.com/67175040/153690489-f5615fb4-94c8-4cdd-8364-d33c4448ccb9.png)
